@@ -129,8 +129,7 @@ defmodule Horde.DynamicSupervisor do
 
   def start_link(mod, init_arg, opts \\ []) do
     name = :"#{opts[:name]}.Supervisor"
-    start_options =
-      Keyword.put(opts, :name, name)
+    start_options = Keyword.put(opts, :name, name)
     Supervisor.start_link(__MODULE__, {mod, init_arg, opts[:name]}, start_options)
   end
 
