@@ -129,7 +129,8 @@ defmodule Horde.DynamicSupervisor do
 
   def start_link(mod, init_arg, opts \\ []) do
     name = :"#{opts[:name]}.Supervisor"
-    start_options = Keyword.put(opts, :name, name)
+    start_options =
+      Keyword.put(opts, :name, name)
     Supervisor.start_link(__MODULE__, {mod, init_arg, opts[:name]}, start_options)
   end
 
@@ -141,8 +142,8 @@ defmodule Horde.DynamicSupervisor do
       raise ArgumentError, "expected :strategy option to be given"
     end
 
-    intensity = Keyword.get(options, :max_restarts, 3)
-    period = Keyword.get(options, :max_seconds, 5)
+    max_restarts = Keyword.get(options, :max_restarts, 3)
+    max_seconds = Keyword.get(options, :max_seconds, 5)
     max_children = Keyword.get(options, :max_children, :infinity)
     extra_arguments = Keyword.get(options, :extra_arguments, [])
     members = Keyword.get(options, :members, [])
@@ -158,8 +159,8 @@ defmodule Horde.DynamicSupervisor do
 
     flags = %{
       strategy: strategy,
-      intensity: intensity,
-      period: period,
+      max_restarts: max_restarts,
+      max_seconds: max_seconds,
       max_children: max_children,
       extra_arguments: extra_arguments,
       distribution_strategy: distribution_strategy,
@@ -189,12 +190,8 @@ defmodule Horde.DynamicSupervisor do
              name: name,
              root_name: name,
              init_module: mod,
-             strategy: flags.strategy,
-             intensity: flags.intensity,
-             period: flags.period,
              max_children: flags.max_children,
              extra_arguments: flags.extra_arguments,
-             strategy: flags.strategy,
              distribution_strategy: flags.distribution_strategy,
              process_redistribution: flags.process_redistribution,
              members: members(flags.members, name)
@@ -205,7 +202,9 @@ defmodule Horde.DynamicSupervisor do
              root_name: name,
              type: :supervisor,
              name: supervisor_name(name),
-             strategy: flags.strategy
+             strategy: flags.strategy,
+             max_restarts: flags.max_restarts,
+             max_seconds: flags.max_seconds
            ]},
           {Horde.SignalShutdown,
            [
